@@ -23,10 +23,10 @@ func main() {
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		fmt.Println("Command execution failed.", err)
-		fmt.Println("Output:", string(output))
+		fmt.Println("Command execution failed: ", err)
+		fmt.Println("Output: ", string(output))
 		panic(err)
 	}
 
-	fmt.Println("Command executed succesfully.", string(output))
-}	
+	fmt.Println("Command executed successfully ", string(output))
+}
