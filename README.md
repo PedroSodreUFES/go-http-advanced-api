@@ -7,7 +7,7 @@
 + Uso de goroutines
 + Uso de websockets
 + Uso de channels
----
+
 ### Tecnologias usadas
 + Go Language
 + PostgreSQL
@@ -24,7 +24,7 @@
 + SQLc
 + Tern
 + Docker
----
+
 ### Como rodar o programa
 ```bash
 docker-compose up -d
@@ -32,7 +32,7 @@ go mod tidy
 go run ./cmd/api
 ```
 - OBS: Requer Go e Docker instalado em seu computador
----
+
 ### Como parar o container Docker e excluir os dados
 
 ```bash
