@@ -38,7 +38,7 @@ func (api *Api) HandleSubscribeUserToAuction(w http.ResponseWriter, r *http.Requ
 	userId, ok := api.Sessions.Get(r.Context(), "AuthenticatedUserId").(uuid.UUID)
 	if !ok {
 		jsonutils.EncodeJson(w, r, http.StatusInternalServerError, map[string]any{
-			"message": "unexpected error, try again later.",
+			"message": "unexpected error, try again later",
 		})
 		return
 	}
@@ -65,9 +65,6 @@ func (api *Api) HandleSubscribeUserToAuction(w http.ResponseWriter, r *http.Requ
 	client := services.NewClient(room, conn, userId)
 
 	room.Register <- client
-	// go client.ReadEventLoop()
-	// go client.WriteEventLoop()
-	for {
-
-	}
+	go client.ReadEventLoop()
+	go client.WriteEventLoop()
 }
