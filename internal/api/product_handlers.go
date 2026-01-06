@@ -1,7 +1,9 @@
 package api
 
 import (
+	"context"
 	"main/internal/jsonutils"
+	"main/internal/services"
 	"main/internal/usecase/product"
 	"net/http"
 
@@ -23,7 +25,7 @@ func(api *Api) handleCreateProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id, err := api.ProductService.CreateProduct(r.Context(), userID, data.ProductName, data.Description, data.Baseprice, data.AuctionEnd)
+	productId, err := api.ProductService.CreateProduct(r.Context(), userID, data.ProductName, data.Description, data.Baseprice, data.AuctionEnd)
 
 	if err != nil {
 		jsonutils.EncodeJson(w, r, http.StatusInternalServerError, map[string]any{
@@ -32,8 +34,20 @@ func(api *Api) handleCreateProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	ctx, cancel := context.WithDeadline(context.Background(), data.AuctionEnd)
+	defer cancel()
+	
+	auctionRoom := services.NewAuctionRoom(ctx, productId, api.BidsService)
+
+	go auctionRoom.Run()
+
+	// operações com mutex para evitar racing conditions
+	api.AuctionLobby.Lock()
+	api.AuctionLobby.Rooms[productId] = auctionRoom
+	api.AuctionLobby.Unlock()
+
 	jsonutils.EncodeJson(w,r,http.StatusCreated, map[string]any{
-		"message": "product created with succes",
-		"product_id": id,
+		"message": "Auction has started with success",
+		"product_id": productId,
 	})
 }	
